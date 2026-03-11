@@ -1,15 +1,15 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // <begin> CHANGE THESE VALUES TO MATCH YOUR SERVICE </begin> -----------------
 
-const SERVICE_NAME = "Banana Add to Cart";
+const SERVICE_NAME = 'Tally Banana';
 const SERVICE_DESCRIPTION =
-	"Generates a Walmart Add to Cart link for a fresh banana. Returns a URL that, when opened, adds the banana to a Walmart shopping cart. Optionally specify a quantity (defaults to 1).";
+	'Generates a Walmart Add to Cart link for a fresh banana. Returns a URL that, when opened, adds the banana to a Walmart shopping cart. Optionally specify a quantity (defaults to 1).';
 const COST = 0;
-const SERVICE_CATEGORY = "shopping";
-const SERVICE_TAGS = ["walmart", "banana", "add-to-cart", "grocery", "shopping", "fruit"];
+const SERVICE_CATEGORY = 'shopping';
+const SERVICE_TAGS = ['walmart', 'banana', 'add-to-cart', 'grocery', 'shopping', 'fruit'];
 
-const BANANA_ITEM_ID = "44390948";
+const BANANA_ITEM_ID = '44390948';
 
 const RUN_REQUEST_SCHEMA = z.object({
 	quantity: z.number().int().min(1).default(1),
@@ -36,7 +36,7 @@ const handleRun = async (request: Request): Promise<Response> => {
 	try {
 		body = await request.json();
 	} catch {
-		return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+		return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
 	}
 
 	const parsed = RUN_REQUEST_SCHEMA.safeParse(body);
@@ -48,7 +48,7 @@ const handleRun = async (request: Request): Promise<Response> => {
 };
 
 const buildRunContract = (baseUrl: string) => ({
-	method: "POST",
+	method: 'POST',
 	endpointPath: `${baseUrl}/run`,
 	inputSchema: z.toJSONSchema(RUN_REQUEST_SCHEMA),
 	outputSchema: z.toJSONSchema(RUN_RESPONSE_SCHEMA),
@@ -66,8 +66,8 @@ const handleContract = (request: Request): Response => {
 			description: SERVICE_DESCRIPTION,
 			category: SERVICE_CATEGORY,
 			tags: SERVICE_TAGS,
-			listingState: "published",
-			price: { currency: "USD", amountCents: COST, unit: "call" },
+			listingState: 'published',
+			price: { currency: 'USD', amountCents: COST, unit: 'call' },
 			runContract,
 		},
 		runContract,
@@ -78,18 +78,18 @@ export default {
 	async fetch(request: Request): Promise<Response> {
 		const url = new URL(request.url);
 
-		if (url.pathname === "/run" && request.method === "POST") {
+		if (url.pathname === '/run' && request.method === 'POST') {
 			return handleRun(request);
 		}
 
-		if (url.pathname === "/contract" && request.method === "GET") {
+		if (url.pathname === '/contract' && request.method === 'GET') {
 			return handleContract(request);
 		}
 
-		if (url.pathname === "/" && request.method === "GET") {
+		if (url.pathname === '/' && request.method === 'GET') {
 			return Response.json({ service: SERVICE_NAME, description: SERVICE_DESCRIPTION });
 		}
 
-		return Response.json({ error: "Not found" }, { status: 404 });
+		return Response.json({ error: 'Not found' }, { status: 404 });
 	},
 } satisfies ExportedHandler<Env>;
